@@ -1,0 +1,11 @@
+0. You need Python version 3.10. And make venv
+
+py -3.11 -m venv venv
+venv\Scripts\activate
+
+1. install pips
+
+python.exe -m pip install --upgrade pip
+pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128
+pip install -r requirements.txt
+pip install soundfile librosa
