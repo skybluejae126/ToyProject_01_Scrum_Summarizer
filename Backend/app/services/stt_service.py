@@ -5,25 +5,33 @@ import librosa
 
 class STTService:
     def __init__(self):
-        logger.info("STT 파이프라인(Whisper) 초기화 중...")
+        logger.info("Whisper Pipeline 로딩 중...")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        
-        #Transformers를 이용한 Whisper 호출
         self.asr_pipe = pipeline(
             "automatic-speech-recognition",
-            model="openai/whisper-large-v3", # 성능을 위해 large-v3 권장
+            model="openai/whisper-base", # 속도를 위해 base 권장
+            chunk_length_s=30,           # 30초 단위로 자동 분할 처리
             device=self.device
         )
-        logger.success(f"STT 서비스 로드 완료 (Device: {self.device})")
+        logger.success("STT 서비스 준비 완료")
 
     async def transcribe(self, audio_path: str):
-        logger.debug(f"파일 분석 시작: {audio_path}")
+        logger.info(f"긴 파일 전사 시작 (30s Chunking 모드): {audio_path}")
         try:
-            # 오디오 로드 및 전사
-            result = self.asr_pipe(audio_path, generate_kwargs={"language": "korean"})
-            text = result["text"]
-            logger.info(f"전사 결과 추출 성공: {text[:50]}...")
-            return text
+            # librosa로 전체를 읽지 않고 파일 경로를 직접 pipe에 전달
+            # return_timestamps=True를 쓰면 구간별로 텍스트를 얻을 수 있음
+            result = self.asr_pipe(
+                audio_path, 
+                batch_size=8, 
+                return_timestamps=True,
+                generate_kwargs={"language": "korean"}
+            )
+            
+            # 전사된 전체 텍스트
+            full_text = result["text"]
+            logger.info("전체 전사 완료")
+            return full_text
+            
         except Exception as e:
-            logger.error(f"전사 중 오류 발생: {str(e)}")
+            logger.error(f"전사 프로세스 중 치명적 오류: {e}")
             raise e

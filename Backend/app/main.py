@@ -10,6 +10,12 @@ app = FastAPI()
 stt_service = STTService()
 ai_service = AIService()
 
+# 서버가 시작될 때 uploads 폴더가 있는지 확인하고 없으면 만듭니다.
+UPLOAD_DIR = "uploads"
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+    logger.info(f"폴더가 존재하지 않아 새로 생성했습니다: {UPLOAD_DIR}")
+
 @app.post("/api/v1/scrum")
 async def process_scrum(
     file: UploadFile = File(...),
