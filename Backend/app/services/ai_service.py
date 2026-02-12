@@ -4,7 +4,7 @@ from app.config import settings, logger
 class AIService:
     def __init__(self):
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
         logger.info("Gemini AI 모델 연결 완료")
 
     async def summarize(self, text: str, user_template: str):
