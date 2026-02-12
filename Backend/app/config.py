@@ -18,6 +18,8 @@ logger.add(
     sys.stdout, 
     colorize=True, 
     format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<magenta>{line}</magenta> - <level>{message}</level>",
-    level="DEBUG"
+    level="DEBUG",
+    backtrace=False, # 긴 계층 구조 추적 끄기
+    diagnose=False
 )
 logger.add("logs/scrum_debug.log", rotation="10MB", retention="10 days")

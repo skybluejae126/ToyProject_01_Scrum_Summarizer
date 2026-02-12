@@ -1,14 +1,26 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 from app.config import logger
 from app.services.stt_service import STTService
 from app.services.ai_service import AIService
+from app.services.notion_service import NotionService
 import os
 
 app = FastAPI()
 
+# CORS 설정 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # 리액트 주소
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 서비스 초기화
 stt_service = STTService()
 ai_service = AIService()
+notion_service = NotionService()
 
 # 서버가 시작될 때 uploads 폴더가 있는지 확인하고 없으면 만듭니다.
 UPLOAD_DIR = "uploads"
@@ -36,8 +48,12 @@ async def process_scrum(
         summary = await ai_service.summarize(raw_text, template)
         
         # 4. (추후 구현) Notion 기록 로직 호출...
-        
-        return {"status": "success", "summary": summary}
+        logger.info("노션 기록 단계 진입...") 
+        notion_url = await notion_service.create_scrum_page(summary)
+        logger.success(f"최종 완료! 노션 URL: {notion_url}")
+
+
+        return {"status": "success", "summary": summary, "notion_url": notion_url}
     
     except Exception as e:
         logger.exception("치명적 오류 발생")
