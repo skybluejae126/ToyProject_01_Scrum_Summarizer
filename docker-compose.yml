@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./Backend
+    container_name: scrum-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./Backend/.env
+    volumes:
+      - ./Backend/uploads:/app/uploads
+      - ./Backend/logs:/app/logs
+    restart: always
+
+  frontend:
+    build: ./Frontend
+    container_name: scrum-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
