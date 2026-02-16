@@ -1,0 +1,16 @@
+# 의존성 및 빌드 결과물
+node_modules/
+build/
+dist/
+.env
+.env.local
+
+# 로그 및 디버깅
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 기타
+.git
+.gitignore
+Dockerfile
